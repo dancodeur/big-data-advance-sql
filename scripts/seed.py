@@ -371,6 +371,7 @@ def main() -> int:
         cur.executemany(
             "insert into public.categorie (category_id, category_name, category_parent_name, "
             "category_child_name, category_created_at, category_parent_id) values (%s,%s,%s,%s,%s,%s)", cat_rows)
+        cat_names = {r[0]: r[1] for r in cat_rows}
         leaf_ids = list(leaf)
         all_cat_ids = leaf_ids + list(parents.values())
 
@@ -477,6 +478,8 @@ def main() -> int:
         def new_product(name, desc, cat_id, brand_id, legacy=None, tag=None, ref=None):
             pid = next(pid_c)
             created = rand_dt(rng, catalog_start, catalog_end)
+            if cat_id is not None:
+                legacy = cat_names[cat_id]            # libellé legacy = nom de la catégorie principale
             products.append((pid, name, ref or f"REF-{pid:05d}", desc, legacy, created, brand_id, cat_id))
             product_created[pid] = created
             product_cat[pid] = cat_id
@@ -600,8 +603,10 @@ def main() -> int:
             "product_categorie, product_create_at, product_marque_id, product_category_id) "
             "values (%s,%s,%s,%s,%s,%s,%s,%s)", products)
 
-        # category_pivot : le trigger a déjà inséré (produit, catégorie principale).
+        # category_pivot : catégorie principale de chaque produit + parent + catégories liées
+        # (on conflict do nothing : compatible avec le trigger de la migration, qui l'insère aussi)
         pivot_extra = set(extra_pivot)
+        pivot_extra |= {(pid, c) for pid, c in product_cat.items() if c is not None}
         for pid in shop_pids:
             pivot_extra.add((pid, leaf[product_cat[pid]][3]))
             if rng.random() < 0.25:
