@@ -1,0 +1,267 @@
+{
+  "version": "32.7.4",
+  "pages": [
+    {
+      "id": "0A9-uCWASApSbtHQ3FxO",
+      "name": "Page-1",
+      "cells": [
+        {
+          "id": "1",
+          "type": "layer"
+        },
+        {
+          "id": "UKWattomcbp1OyENBfKN-3",
+          "type": "edge",
+          "parent": "1",
+          "source": "UKWattomcbp1OyENBfKN-1",
+          "target": "UKWattomcbp1OyENBfKN-2"
+        },
+        {
+          "id": "UKWattomcbp1OyENBfKN-4",
+          "type": "node",
+          "parent": "UKWattomcbp1OyENBfKN-3",
+          "label": "user_id.adress_user_id"
+        },
+        {
+          "id": "UKWattomcbp1OyENBfKN-9",
+          "type": "edge",
+          "parent": "1",
+          "source": "UKWattomcbp1OyENBfKN-1",
+          "target": "UKWattomcbp1OyENBfKN-8"
+        },
+        {
+          "id": "UKWattomcbp1OyENBfKN-11",
+          "type": "node",
+          "parent": "UKWattomcbp1OyENBfKN-9",
+          "label": "Many to Many"
+        },
+        {
+          "id": "UKWattomcbp1OyENBfKN-1",
+          "type": "node",
+          "parent": "1",
+          "label": "USERS\n\n*user_id (integer): Increment()\n*user_pseudo (50): String\n*user_email(100) : String _ Unique\n*user_password(255) : String\n==========================\n*user_phone (255) : String\n*user_account_status : Bool\n*user_create_at: DataTime",
+          "html": "<b>USERS</b><div><b><br></b><div><font style=\"font-size: 10px;\">*user_id (integer): Increment()</font></div><div><span style=\"font-size: 11px;\">*user_pseudo (50): String</span></div><div><span style=\"font-size: 11px;\">*user_email(100) : String _ Unique</span></div><div><span style=\"font-size: 11px;\">*user_password(255) : String</span></div></div><div>==========================</div><div>*user_phone (255) : String</div><div>*user_account_status : Bool</div><div>*user_create_at: DataTime</div>"
+        },
+        {
+          "id": "UKWattomcbp1OyENBfKN-2",
+          "type": "node",
+          "parent": "1",
+          "label": "ADRESS\n\n*adress_id (integer): Increment()\n*adress_cp (50): String\n*adress_name(255) : String\n*adress_type(255) : String\n*adress_contry (255) : Stri,g\n*adress_user_id(255) : String",
+          "html": "<b>ADRESS</b><div><b><br></b><div><font style=\"font-size: 10px;\">*adress_id (integer): Increment()</font></div><div><span style=\"font-size: 11px;\">*adress_cp (50): String</span></div><div><span style=\"font-size: 11px;\">*adress_name(255) : String</span></div><div><span style=\"font-size: 11px;\">*adress_type(255) : String</span></div><div><span style=\"font-size: 11px;\">*adress_contry (255) : Stri,g</span></div><div><span style=\"font-size: 11px;\">*adress_user_id(255) : String</span></div></div><div><br></div>"
+        },
+        {
+          "id": "UKWattomcbp1OyENBfKN-6",
+          "type": "node",
+          "parent": "1",
+          "label": "adress_type : domicile, travail, autre"
+        },
+        {
+          "id": "UKWattomcbp1OyENBfKN-29",
+          "type": "edge",
+          "parent": "1",
+          "source": "UKWattomcbp1OyENBfKN-7",
+          "target": "UKWattomcbp1OyENBfKN-8"
+        },
+        {
+          "id": "UKWattomcbp1OyENBfKN-7",
+          "type": "node",
+          "parent": "1",
+          "label": "PRODUCT \n\n*product_id (integer): Increment()\n*product_name (255): String _ Unique\n*product_ref (255): String _ Unique\n*product_desc : Text \n*product_categorie : string\n*product_create_at : String\n*product_marque_id\n*product_category_id",
+          "html": "<b>PRODUCT&nbsp;</b><div><b><br></b><div><font style=\"font-size: 10px;\">*product_id (integer): Increment()</font></div><div><span style=\"font-size: 11px;\">*product_name (255): String _ Unique</span></div><div><span style=\"font-size: 11px;\">*product_ref (255): String _ Unique</span><span style=\"font-size: 11px;\"></span></div><div><span style=\"font-size: 11px;\">*product_desc : Text&nbsp;</span></div></div><div><span style=\"font-size: 11px;\">*product_categorie : string</span></div><div><span style=\"font-size: 11px;\">*product_create_at : String</span></div><div><span style=\"font-size: 11px;\">*product_marque_id</span></div><div><span style=\"font-size: 11px;\">*product_category_id</span></div>"
+        },
+        {
+          "id": "UKWattomcbp1OyENBfKN-8",
+          "type": "node",
+          "parent": "1",
+          "label": "Product_Pivot\n\n*product_id\n*user_id",
+          "html": "<b>Product_Pivot</b><div><b><br></b><div><font style=\"font-size: 10px;\">*product_id</font></div><div><span style=\"font-size: 11px;\">*user_id&nbsp;<br></span></div></div>"
+        },
+        {
+          "id": "UKWattomcbp1OyENBfKN-13",
+          "type": "node",
+          "parent": "1",
+          "label": "CATEGORIE\n\n*category_id (integer) : increment ()\n*category_name (string)\n\n*category_parent_name (string)\n*category_child_name(string)\n*category_created_at: DateTime",
+          "html": "<b>CATEGORIE</b><div><b><br></b><div><font style=\"font-size: 10px;\">*category_id (integer) : increment ()</font></div><div><span style=\"font-size: 11px;\">*category_name (string)<br></span></div></div><div><span style=\"font-size: 11px;\">*category_parent_name (string)</span></div><div><span style=\"font-size: 11px;\">*category_child_name(string)</span></div><div><span style=\"font-size: 11px;\">*category_created_at: DateTime</span></div><div><span style=\"font-size: 11px;\">&nbsp;</span></div><div><span style=\"font-size: 11px;\"><br></span></div>"
+        },
+        {
+          "id": "UKWattomcbp1OyENBfKN-27",
+          "type": "edge",
+          "parent": "1",
+          "source": "UKWattomcbp1OyENBfKN-17",
+          "target": "UKWattomcbp1OyENBfKN-7"
+        },
+        {
+          "id": "UKWattomcbp1OyENBfKN-17",
+          "type": "node",
+          "parent": "1",
+          "label": "Category_Pivot\n\n*product_id\n*category_id",
+          "html": "<b>Category_Pivot</b><div><b><br></b><div><font style=\"font-size: 10px;\">*product_id</font></div><div><span style=\"font-size: 11px;\">*category_id&nbsp;<br></span></div></div>"
+        },
+        {
+          "id": "UKWattomcbp1OyENBfKN-19",
+          "type": "edge",
+          "parent": "1",
+          "source": "UKWattomcbp1OyENBfKN-17",
+          "target": "UKWattomcbp1OyENBfKN-13"
+        },
+        {
+          "id": "UKWattomcbp1OyENBfKN-32",
+          "type": "node",
+          "parent": "1",
+          "label": "MARQUES\n\n*marque_id (integer): Increment()\n*marque_name : String\n*marque_ref : String",
+          "html": "<b>MARQUES</b><div><b><br></b><div><font style=\"font-size: 10px;\">*marque_id (integer): Increment()</font></div><div><span style=\"font-size: 11px;\">*marque_name : String</span></div><div><span style=\"font-size: 11px;\">*marque_ref : String</span></div></div><div><br></div>"
+        },
+        {
+          "id": "UKWattomcbp1OyENBfKN-35",
+          "type": "edge",
+          "parent": "1"
+        },
+        {
+          "id": "UKWattomcbp1OyENBfKN-37",
+          "type": "node",
+          "parent": "UKWattomcbp1OyENBfKN-35",
+          "label": "One to Many et&nbsp; Many to One"
+        },
+        {
+          "id": "UKWattomcbp1OyENBfKN-42",
+          "type": "edge",
+          "parent": "1",
+          "source": "UKWattomcbp1OyENBfKN-38",
+          "target": "UKWattomcbp1OyENBfKN-41"
+        },
+        {
+          "id": "UKWattomcbp1OyENBfKN-38",
+          "type": "node",
+          "parent": "1",
+          "label": "VARIANTES\n\n*variante_id (integer): Increment()\n*variante_size : String\n*variante_color: String\n*variante_price\n*variante_create_at\n*variante_product_id",
+          "html": "<b>VARIANTES</b><div><b><br></b><div><font style=\"font-size: 10px;\">*variante_id (integer): Increment()</font></div><div><span style=\"font-size: 11px;\">*variante_size : String</span></div><div><span style=\"font-size: 11px;\">*variante_color: String</span></div><div><span style=\"font-size: 11px;\">*variante_price</span></div><div><span style=\"font-size: 11px;\">*variante_create_at</span></div><div><span style=\"font-size: 11px;\">*variante_product_id</span><span style=\"font-size: 11px;\"></span></div><div><br></div></div><div><br></div>"
+        },
+        {
+          "id": "UKWattomcbp1OyENBfKN-39",
+          "type": "edge",
+          "parent": "1",
+          "source": "UKWattomcbp1OyENBfKN-7",
+          "target": "UKWattomcbp1OyENBfKN-38"
+        },
+        {
+          "id": "UKWattomcbp1OyENBfKN-40",
+          "type": "node",
+          "parent": "UKWattomcbp1OyENBfKN-39",
+          "label": "One to Many"
+        },
+        {
+          "id": "UKWattomcbp1OyENBfKN-44",
+          "type": "edge",
+          "parent": "1",
+          "source": "UKWattomcbp1OyENBfKN-41",
+          "target": "UKWattomcbp1OyENBfKN-43"
+        },
+        {
+          "id": "UKWattomcbp1OyENBfKN-41",
+          "type": "node",
+          "parent": "1",
+          "label": "PRICE_Historique\n\n*price_id (integer) increment ()\n*price_amount\n*create_at : String\n*currency_id\n*price_variante_id",
+          "html": "<b>PRICE_Historique</b><div><b><br></b><div><font style=\"font-size: 10px;\">*price_id (integer) increment ()</font></div><div><span style=\"font-size: 10px; background-color: transparent; color: light-dark(#000000, var(--ge-light-color, #ffffff));\">*price_amount</span></div><div><span style=\"font-size: 11px;\">*create_at : String</span></div><div><span style=\"font-size: 11px;\">*currency_id</span></div><div><div><font style=\"font-size: 10px;\">*price_variante_id</font></div></div><div><font style=\"font-size: 10px;\"><br></font></div><div><br></div><div><br></div></div><div><br></div>"
+        },
+        {
+          "id": "UKWattomcbp1OyENBfKN-43",
+          "type": "node",
+          "parent": "1",
+          "label": "CURRENCY\n\n*currency_id (integer) increment ()\n*currency_name",
+          "html": "<div><b><br></b></div><div><b>CURRENCY</b></div><div><b><br></b><div><font style=\"font-size: 10px;\">*currency_id (integer) increment ()</font></div><div><font style=\"font-size: 10px;\">*currency_name</font></div><div><br></div><div><br></div><div><br></div><div><br></div></div><div><br></div>"
+        },
+        {
+          "id": "UKWattomcbp1OyENBfKN-66",
+          "type": "edge",
+          "parent": "1",
+          "source": "UKWattomcbp1OyENBfKN-46",
+          "target": "UKWattomcbp1OyENBfKN-64"
+        },
+        {
+          "id": "UKWattomcbp1OyENBfKN-46",
+          "type": "node",
+          "parent": "1",
+          "label": "PANIER\n\n*panier_id (integer) increment ()\n*panier_user_id",
+          "html": "<div>PANIER</div><div><b><br></b><div><font style=\"font-size: 10px;\">*panier_id (integer) increment ()</font></div><div><font style=\"font-size: 10px;\">*panier_user_id</font></div><div><br></div><div><br></div><div><br></div></div><div><br></div>"
+        },
+        {
+          "id": "UKWattomcbp1OyENBfKN-67",
+          "type": "edge",
+          "parent": "1",
+          "source": "UKWattomcbp1OyENBfKN-47",
+          "target": "UKWattomcbp1OyENBfKN-65"
+        },
+        {
+          "id": "UKWattomcbp1OyENBfKN-47",
+          "type": "node",
+          "parent": "1",
+          "label": "COMMANDES\n*commande_id (integer) increment ()\n*commande_user_id\n*commande_ref\n*commande_date\n*commande_status\n*commande_adress",
+          "html": "<div>COMMANDES</div><div><div><font style=\"font-size: 10px;\">*commande_id (integer) increment ()</font></div><div><font style=\"font-size: 10px;\">*commande_user_id</font></div><div><font style=\"font-size: 10px;\">*commande_ref</font></div><div><font style=\"font-size: 10px;\">*commande_date</font></div><div><font style=\"font-size: 10px;\">*commande_status</font></div><div><span style=\"font-size: 10px;\">*commande_adress</span></div><div><br></div><div><br></div></div><div><br></div>"
+        },
+        {
+          "id": "UKWattomcbp1OyENBfKN-64",
+          "type": "node",
+          "parent": "1",
+          "label": "PANIER_ITEMS\n\n*panier_items_id (integer) increment ()\n*panier_id\n*panier_items_variante_id\n*panier_items_quantity",
+          "html": "<div>PANIER_ITEMS</div><div><b><br></b><div><font style=\"font-size: 10px;\">*panier_items_id (integer) increment ()</font></div><div><font style=\"font-size: 10px;\">*panier_id</font></div><div><font style=\"font-size: 10px;\">*panier_items_variante_id</font></div><div><font style=\"font-size: 10px;\">*panier_items_quantity</font></div><div><font style=\"font-size: 10px;\">&nbsp;</font></div><div><br></div><div><br></div><div><br></div></div><div><br></div>"
+        },
+        {
+          "id": "UKWattomcbp1OyENBfKN-65",
+          "type": "node",
+          "parent": "1",
+          "label": "COMMANDES_ITEMS\n*commande_items_id (integer) increment ()\n*commande_id\n*commande_variante_id\n*commande_unique_price\n*quantity",
+          "html": "<div>COMMANDES_ITEMS</div><div><div><font style=\"font-size: 10px;\">*commande_items_id (integer) increment ()</font></div><div><font style=\"font-size: 10px;\">*commande_id</font></div><div><font style=\"font-size: 10px;\">*commande_variante_id</font></div><div><font style=\"font-size: 10px;\">*commande_unique_price</font></div><div><font style=\"font-size: 10px;\">*quantity</font></div></div>"
+        },
+        {
+          "id": "UKWattomcbp1OyENBfKN-68",
+          "type": "node",
+          "parent": "1",
+          "label": "USER_GUEST\n*user_guest_id (integer) increment ()\n*user_guest_number\n*commande_id",
+          "html": "<div>USER_GUEST</div><div><div><font style=\"font-size: 10px;\">*user_guest_id (integer) increment ()</font></div><div><font style=\"font-size: 10px;\">*user_guest_number</font></div></div><div><font style=\"font-size: 10px;\">*commande_id</font></div>"
+        },
+        {
+          "id": "UKWattomcbp1OyENBfKN-72",
+          "type": "node",
+          "parent": "1",
+          "label": "COMMANDES_USERGUEST\n*id : increment()\n*commande_id\n*user_guest_id",
+          "html": "<div>COMMANDES_USERGUEST</div><div><div><font style=\"font-size: 10px;\">*id : increment()</font></div><div><font style=\"font-size: 10px;\">*commande_id</font></div><div><font style=\"font-size: 10px;\">*user_guest_id</font></div><div><br></div><div><br></div></div><div><br></div>"
+        },
+        {
+          "id": "UKWattomcbp1OyENBfKN-73",
+          "type": "edge",
+          "parent": "1",
+          "source": "UKWattomcbp1OyENBfKN-47",
+          "target": "UKWattomcbp1OyENBfKN-72"
+        },
+        {
+          "id": "UKWattomcbp1OyENBfKN-74",
+          "type": "edge",
+          "parent": "1",
+          "source": "UKWattomcbp1OyENBfKN-72",
+          "target": "UKWattomcbp1OyENBfKN-68"
+        },
+        {
+          "id": "UKWattomcbp1OyENBfKN-77",
+          "type": "node",
+          "parent": "1",
+          "label": "PROMOTION\n\n*promotion_id (integer) increment ()\n*promotion_category_id\n*promotion_product_id\n*promotion_expire_date\n*promotion_created_date",
+          "html": "<div>PROMOTION</div><div><b><br></b><div><font style=\"font-size: 10px;\">*promotion_id (integer) increment ()</font></div><div><font style=\"font-size: 10px;\">*promotion_category_id</font></div><div><font style=\"font-size: 10px;\">*promotion_product_id</font></div><div><font style=\"font-size: 10px;\">*promotion_expire_date</font></div><div><font style=\"font-size: 10px;\">*promotion_created_date</font></div><div><br></div><div><br></div><div><br></div></div><div><br></div>"
+        },
+        {
+          "id": "UKWattomcbp1OyENBfKN-79",
+          "type": "edge",
+          "parent": "1",
+          "source": "UKWattomcbp1OyENBfKN-78",
+          "target": "UKWattomcbp1OyENBfKN-77"
+        },
+        {
+          "id": "UKWattomcbp1OyENBfKN-78",
+          "type": "node",
+          "parent": "1",
+          "label": "Reduction\n\n*reduction_id (integer) increment ()\n*pourcentage\n*promotion_id",
+          "html": "<div>Reduction</div><div><b><br></b><div><font style=\"font-size: 10px;\">*reduction_id (integer) increment ()</font></div><div><font style=\"font-size: 10px;\">*pourcentage</font></div><div><font style=\"font-size: 10px;\">*promotion_id</font></div></div>"
+        }
+      ]
+    }
+  ]
+}
