@@ -43,8 +43,8 @@ join public.categorie p on p.category_id = c.category_parent_id
 where c.category_parent_name is distinct from p.category_name;
 
 insert into _checks
-select 'commandes invitées <-> commandes_userguest', count(*) from public.commandes c
-where (c.commande_user_id is null) <> exists (select 1 from public.commandes_userguest g where g.commande_id = c.commande_id);
+select 'commande liée à un invité => pas de commande_user_id', count(*) from public.commandes c
+where c.commande_user_id is not null and exists (select 1 from public.commandes_userguest g where g.commande_id = c.commande_id);
 
 insert into _checks
 select 'user_guest.commande_id cohérent avec le pivot', count(*) from public.user_guest g
@@ -54,10 +54,6 @@ where g.commande_id is not null and not exists
 insert into _checks
 select 'adresse de commande appartient au client', count(*) from public.commandes c
 join public.adress a on a.adress_id = c.commande_adress_id where a.adress_user_id is distinct from c.commande_user_id;
-
-insert into _checks
-select 'promotion sans réduction', count(*) from public.promotion p
-where not exists (select 1 from public.reduction r where r.promotion_id = p.promotion_id);
 
 insert into _checks
 select 'séquences > max(id) (prochain insert OK)', count(*) from (

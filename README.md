@@ -30,6 +30,19 @@ python scripts/rebuild_db.py --dsn postgresql://postgres:postgres@localhost:5432
 Seeder seul : `python scripts/seed.py --dsn <dsn> --users 200 --products 300 --seed 1 [--reset --yes]`
 (refuse de tourner si des tables contiennent déjà des lignes, sauf `--reset`).
 
+## Jeu de cas limites pour les tests
+
+Le seeder ajoute par défaut **66 cas limites, 10 lignes minimum chacun** (`--edge-count N` pour changer le minimum, `0` pour les désactiver) :
+paniers vides / à 1 ligne / à 12 lignes / quantité 999, utilisateurs sans panier / adresse / commande / favoris / téléphone, comptes inactifs,
+champs à longueur maximale (pseudo 50, email 100, téléphone 255, adresse 255), caractères spéciaux (emoji, apostrophes, injection SQL),
+produits sans marque / catégorie / variante / description, nom de 255 caractères, description de 10 000 caractères, produit à 30+ variantes,
+prix à 0,00 et prix maximal, historiques de prix longs ou à un seul relevé, commandes de **chaque statut**, commandes du jour, sans ligne, à total nul,
+au prix modifié depuis, orphelines (compte supprimé), invitées (1 à 3 commandes, 2 invités sur une commande, invité sans commande),
+promotions actives / expirées / bientôt expirées / sans réduction / à 4 réductions, réductions de 100 % et de 0,01 %.
+
+Chaque cas est vérifié en base avant le commit (rollback s'il manque des lignes). Les ids concernés sont exportables :
+`python scripts/seed.py --manifest cas_limites.json`. Les lignes de cas limites portent un préfixe repérable (`edge_…`, `EDGE-…`).
+
 ## Sur Supabase
 
 ```bash

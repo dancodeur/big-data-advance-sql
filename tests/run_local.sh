@@ -18,4 +18,11 @@ python3 -I scripts/rebuild_db.py --dsn "$DSN" && { echo "ERREUR"; exit 1; } || e
 psql -q -c "delete from auth.users" -c "update public.users set auth_user_id = null" >/dev/null
 python3 -I scripts/rebuild_db.py --dsn "$DSN" --reset --seed --seed-args "--seed 7"
 psql -q -v ON_ERROR_STOP=1 -f tests/verify.sql | grep -E "ÉCHEC" && exit 1 || echo "== cohérence + RLS OK (après --reset) =="
+for N in 25 0; do
+  psql -q -c "delete from auth.users" -c "update public.users set auth_user_id = null" >/dev/null
+  python3 -I scripts/rebuild_db.py --dsn "$DSN" --reset --seed --seed-args "--edge-count $N --seed 3" >/dev/null
+  psql -q -v ON_ERROR_STOP=1 -f tests/verify.sql | grep -E "ÉCHEC" && exit 1 || echo "== cohérence + RLS OK (edge-count $N) =="
+done
+python3 -I scripts/rebuild_db.py --dsn "$DSN" --reset --seed --seed-args "--manifest /tmp/manifest.json" >/dev/null
+echo "== manifeste : $(python3 -c "import json;d=json.load(open('/tmp/manifest.json'));print(len(d['cases']),'cas')") =="
 python3 -I scripts/generate_drawio.py --dsn "$DSN"
