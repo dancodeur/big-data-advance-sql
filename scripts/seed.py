@@ -21,7 +21,9 @@ Avant le commit, une auto-vérification interroge la base : si un cas limite a m
 --edge-count lignes, tout est annulé (rollback).
 
 Usage :
-    export DATABASE_URL="postgresql://postgres:MOT_DE_PASSE@db.<ref>.supabase.co:5432/postgres"
+    # soit une ligne dans le fichier .env :  DATABASE_URL=postgresql://postgres.<ref>:MOT_DE_PASSE@<hote-pooler>:5432/postgres
+    # soit PowerShell (GUILLEMETS obligatoires) :  $env:DATABASE_URL = "postgresql://..."
+    # soit bash :  export DATABASE_URL="postgresql://..."
     python scripts/seed.py --users 60 --products 80 --seed 42
     python scripts/seed.py --reset --yes                 # vide les 18 tables puis re-peuple
     python scripts/seed.py --edge-count 25 --manifest cas_limites.json
@@ -43,6 +45,7 @@ import re
 import sys
 import unicodedata
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
 
 import psycopg
 from faker import Faker
@@ -261,6 +264,21 @@ SCENARIOS: list[tuple[str, str, str]] = [
 ]
 
 
+def load_dotenv() -> None:
+    """Charge DATABASE_URL (et autres variables) depuis un fichier .env, sans dépendance externe.
+    Cherche dans le dossier courant, puis à côté du script. Une variable déjà définie n'est jamais écrasée."""
+    here = Path(__file__).resolve().parent
+    for base in (Path.cwd(), here, here.parent):
+        env_file = base / ".env"
+        if env_file.is_file():
+            for line in env_file.read_text(encoding="utf-8-sig").splitlines():
+                line = line.strip()
+                if line and not line.startswith("#") and "=" in line:
+                    key, value = line.split("=", 1)
+                    os.environ.setdefault(key.strip(), value.strip().strip('"').strip("'"))
+            return
+
+
 def slug(text: str) -> str:
     text = unicodedata.normalize("NFKD", text).encode("ascii", "ignore").decode()
     return re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-")
@@ -284,8 +302,10 @@ def pad(text: str, size: int, filler: str = "x") -> str:
 
 
 def main() -> int:
+    load_dotenv()
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--dsn", default=os.environ.get("DATABASE_URL"), help="chaîne de connexion (ou DATABASE_URL)")
+    ap.add_argument("--dsn", default=os.environ.get("DATABASE_URL"),
+                    help="chaîne de connexion (sinon variable DATABASE_URL, ou ligne DATABASE_URL=... du fichier .env)")
     ap.add_argument("--seed", type=int, default=42, help="graine aléatoire (reproductible)")
     ap.add_argument("--users", type=int, default=60)
     ap.add_argument("--guests", type=int, default=12)
