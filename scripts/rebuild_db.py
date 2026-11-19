@@ -35,7 +35,7 @@ from psycopg.conninfo import conninfo_to_dict, make_conninfo
 ROOT = Path(__file__).resolve().parent.parent
 MIGRATIONS = sorted((ROOT / "supabase" / "migrations").glob("*.sql"))
 STUBS = ROOT / "scripts" / "local_supabase_stubs.sql"
-SEED = ROOT / "scripts" / "seed.py"
+SEED = ROOT / "scripts" / "seeder.py"
 DEFAULT_DSN = "postgresql://postgres:postgres@localhost:5432/shop"
 
 TABLES = [
@@ -56,7 +56,7 @@ def main() -> int:
                     help=f"chaîne de connexion (défaut : DATABASE_URL ou {DEFAULT_DSN})")
     ap.add_argument("--create-db", action="store_true", help="crée la base cible si elle n'existe pas")
     ap.add_argument("--reset", action="store_true", help="supprime les tables du schéma avant de recréer")
-    ap.add_argument("--seed", action="store_true", help="peuple la base avec scripts/seed.py")
+    ap.add_argument("--seed", action="store_true", help="peuple la base avec scripts/seeder.py")
     ap.add_argument("--seed-args", default="", help="arguments passés au seeder, ex: \"--users 200 --seed 1\"")
     args = ap.parse_args()
 
@@ -101,7 +101,7 @@ def main() -> int:
 
     if args.seed:
         cmd = [sys.executable, "-I", str(SEED), "--dsn", args.dsn, "--reset", "--yes", *args.seed_args.split()]
-        print("Seeding avec scripts/seed.py")
+        print("Seeding avec scripts/seeder.py")
         return subprocess.call(cmd)
     return 0
 

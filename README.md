@@ -11,9 +11,9 @@ Schéma relationnel e-commerce corrigé à partir de `docs/original/Modelisation
 | `docs/original/Modelisation_DB.json` | Schéma d'origine |
 | `supabase/migrations/20261118120000_init_ecommerce_schema.sql` | Schéma de la BD : 18 tables, contraintes, index, triggers, RLS |
 | `sql/schema_tables_only.sql` | Version allégée : uniquement les 18 tables, clés, contraintes et index (sans RLS, policies, droits, triggers) |
-| `sql/seed_data/seed_data_0X_sur_04.sql` | Mêmes données que `seed.py --seed 42`, en 4 fichiers SQL à coller dans le SQL Editor Supabase, dans l'ordre (sans mot de passe ni Python) |
+| `sql/seed_data/seed_data_0X_sur_04.sql` | Mêmes données que `seeder.py --seed 42`, en 4 fichiers SQL à coller dans le SQL Editor Supabase, dans l'ordre (sans mot de passe ni Python) |
 | `scripts/rebuild_db.py` | Reconstruit la BD en local (ou sur Supabase) depuis les migrations |
-| `scripts/seed.py` | Seeder : peuple les 18 tables avec des données fictives cohérentes |
+| `scripts/seeder.py` | Seeder : peuple les 18 tables avec des données fictives cohérentes |
 | `scripts/generate_drawio.py` | Régénère le `.drawio` depuis la base réelle |
 | `scripts/local_supabase_stubs.sql` | Faux environnement Supabase (rôles, `auth.uid()`), utilisé en local uniquement |
 | `tests/verify.sql`, `tests/run_local.sh` | Contrôles de cohérence + RLS, test de bout en bout |
@@ -29,7 +29,7 @@ python scripts/rebuild_db.py --dsn postgresql://postgres:postgres@localhost:5432
 python scripts/rebuild_db.py --dsn postgresql://postgres:postgres@localhost:5432/shop --reset --seed
 ```
 
-Seeder seul : `python scripts/seed.py --dsn <dsn> --users 200 --products 300 --seed 1 [--reset --yes]`
+Seeder seul : `python scripts/seeder.py --dsn <dsn> --users 200 --products 300 --seed 1 [--reset --yes]`
 (refuse de tourner si des tables contiennent déjà des lignes, sauf `--reset`).
 
 ## Jeu de cas limites pour les tests
@@ -43,7 +43,7 @@ au prix modifié depuis, orphelines (compte supprimé), invitées (1 à 3 comman
 promotions actives / expirées / bientôt expirées / sans réduction / à 4 réductions, réductions de 100 % et de 0,01 %.
 
 Chaque cas est vérifié en base avant le commit (rollback s'il manque des lignes). Les ids concernés sont exportables :
-`python scripts/seed.py --manifest cas_limites.json`. Les lignes de cas limites portent un préfixe repérable (`edge_…`, `EDGE-…`).
+`python scripts/seeder.py --manifest cas_limites.json`. Les lignes de cas limites portent un préfixe repérable (`edge_…`, `EDGE-…`).
 
 ## Sur Supabase
 
@@ -62,11 +62,22 @@ Ou coller la migration dans le SQL editor / `supabase db push`.
 - RLS : catalogue en lecture publique, données personnelles réservées au propriétaire, `user_guest` / `commandes_userguest` accessibles au `service_role` uniquement.
 - Noms conservés malgré les fautes d'origine (`adress_contry`, …) pour ne rien casser.
 
+## Seeder (un seul fichier)
+
+`scripts/seeder.py` crée les 18 tables (schéma intégré, identique à `schema_bd.sql`) **puis** les remplit. Une seule commande :
+
+```
+pip install "psycopg[binary]" faker
+python scripts/seeder.py --dsn "postgresql://utilisateur:motdepasse@localhost:5432/ma_base"
+```
+
+- Si les tables existent déjà et sont pleines : ajouter `--reset --yes` pour tout vider avant.
+- Mêmes données à chaque lancement (`--seed 42`, date de référence fixe `--now 2026-11-19T13:30:00+01:00`) : ce sont exactement celles de `sql/seed_data/`. `--now maintenant` utilise l'heure réelle.
+- 250 utilisateurs, 30 invités, ~870 commandes, 66 cas limites (10 lignes minimum chacun), 8 paires de produits souvent achetées ensemble, de vraies villes pondérées.
+
 ## Défis SQL
 
-- `sql/defis_sql.sql` : les défis 01 à 04 (consigne + requête testée sur PostgreSQL 16 et sur Supabase).
-- Les villes du seeder sont de vraies villes pondérées (Paris, Lyon, Marseille…) : le défi 02 (« au moins 30 commandes ») renvoie des lignes dès le premier chargement.
-- Valeurs par défaut du seeder : 250 utilisateurs, 30 invités, ~870 commandes.
+- `sql/defis_sql.sql` : défis 01 à 05, 07, 08, 18, 19 et 20 (requêtes testées sur PostgreSQL 16 et Supabase).
 - Recharger les données dans Supabase : `sql/reset_donnees.sql` (vide les 18 tables), puis `sql/seed_data/seed_data_01…04` dans l'ordre.
 - Régénérer ces 4 fichiers depuis une base remplie : `python scripts/export_seed_sql.py --dsn <dsn> --out sql/seed_data --parts 4`.
-- `sql/optionnel_villes_realistes.sql` : rattrapage pour l'ancienne version des données uniquement.
+- Les défis 03, 07 et 19 utilisent `now()` : leurs résultats évoluent avec la date du jour.

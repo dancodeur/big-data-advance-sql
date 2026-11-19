@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Exporte les données d'une base déjà remplie (par seed.py) en N fichiers SQL
+Exporte les données d'une base déjà remplie (par seeder.py) en N fichiers SQL
 « INSERT » à coller dans le SQL Editor de Supabase (dans l'ordre 01, 02, ...).
 
     python scripts/export_seed_sql.py --dsn "host=/tmp port=54331 dbname=src2 user=postgres" \
@@ -66,7 +66,7 @@ def main() -> int:
         tables = list(dict.fromkeys(re.match(r"INSERT INTO public\.(\w+)", s).group(1) for s in p))
         head = (f"-- Données de test — partie {i} sur {n}  (tables : {', '.join(tables)})\n"
                 "-- À exécuter dans l'ordre (01, 02, ...) dans le SQL Editor Supabase, APRÈS la création des tables.\n"
-                f"-- Généré par scripts/seed.py --seed {args.seed} puis scripts/export_seed_sql.py.\n\n")
+                f"-- Généré par scripts/seeder.py --seed {args.seed} puis scripts/export_seed_sql.py.\n\n")
         body = "\n\n".join(p) + "\n"
         if i == n:
             body += "\n-- Remise à jour des compteurs d'identifiants\n" + "\n".join(setvals) + "\n"
