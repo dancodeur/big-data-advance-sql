@@ -118,3 +118,27 @@ WHERE v.variante_price > 0
           AND c.commande_status IN ('payee', 'expediee', 'livree')
       )
 ORDER BY p.product_name, v.variante_size, v.variante_color;
+
+
+-- =====================================================================
+-- DÉFI SQL 05 — Classement des marques par chiffre d'affaires
+-- Classez les marques par chiffre d'affaires en tenant compte des
+-- quantités et des prix réellement payés.
+-- =====================================================================
+-- "Prix réellement payé" = commandes_items.commande_unique_price (le prix figé
+-- au moment de la commande), et NON le prix actuel de la variante, qui a pu
+-- changer depuis. CA = SUM(prix payé x quantité), sur les commandes validées
+-- (payee, expediee, livree). Les produits sans marque ne sont pas classés.
+SELECT RANK() OVER (ORDER BY SUM(i.commande_unique_price * i.quantity) DESC) AS rang,
+       m.marque_name                                      AS marque,
+       SUM(i.quantity)                                    AS quantites_vendues,
+       COUNT(DISTINCT c.commande_id)                      AS nb_commandes,
+       ROUND(SUM(i.commande_unique_price * i.quantity), 2) AS chiffre_affaires
+FROM commandes_items i
+JOIN commandes c ON c.commande_id = i.commande_id
+JOIN variantes v ON v.variante_id = i.commande_variante_id
+JOIN product   p ON p.product_id  = v.variante_product_id
+JOIN marques   m ON m.marque_id   = p.product_marque_id
+WHERE c.commande_status IN ('payee', 'expediee', 'livree')
+GROUP BY m.marque_id, m.marque_name
+ORDER BY rang, marque;
