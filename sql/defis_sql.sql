@@ -204,3 +204,55 @@ SELECT pays,
 FROM classement
 WHERE rang = 1
 ORDER BY chiffre_affaires DESC;
+
+
+-- =====================================================================
+-- DÉFI SQL 18 — Évolution mensuelle du chiffre d'affaires par pays
+-- Quelle est la variation, en euros et en pourcentage, du CA par pays par
+-- rapport au mois précédent, y compris les mois à zéro ?
+-- =====================================================================
+-- • CA = prix payé x quantité des commandes validées (payee, expediee, livree) ;
+--   les prix sont supposés en euros. Pays = pays de l'adresse liée à la commande.
+-- • "Y compris les mois à zéro" : une requête GROUP BY ne montre que les mois où il
+--   y a eu des ventes. On construit donc d'abord un calendrier complet (generate_series)
+--   croisé avec tous les pays (CROSS JOIN), puis on y rattache les ventes (LEFT JOIN)
+--   en remplaçant les trous par 0 (COALESCE).
+-- • LAG() va chercher le CA du mois précédent du même pays.
+-- • Variation en % = (CA - CA précédent) / CA précédent x 100. Si le mois précédent
+--   valait 0, le pourcentage est indéfini : NULL (NULLIF évite la division par zéro).
+--   Le tout premier mois n'a pas de mois précédent : variations NULL.
+-- • Le mois est calculé à l'heure de Paris (résultat identique partout).
+-- • Le dernier mois du calendrier est en cours : il est incomplet.
+WITH ventes AS (
+  SELECT a.adress_contry                                              AS pays,
+         date_trunc('month', c.commande_date AT TIME ZONE 'Europe/Paris')::date AS mois,
+         SUM(i.commande_unique_price * i.quantity)                    AS ca
+  FROM commandes c
+  JOIN adress          a ON a.adress_id  = c.commande_adress_id
+  JOIN commandes_items i ON i.commande_id = c.commande_id
+  WHERE c.commande_status IN ('payee', 'expediee', 'livree')
+  GROUP BY 1, 2
+),
+calendrier AS (                      -- tous les mois, du premier au dernier mois de vente
+  SELECT generate_series(MIN(mois), MAX(mois), INTERVAL '1 month')::date AS mois
+  FROM ventes
+),
+pays AS (SELECT DISTINCT pays FROM ventes),
+grille AS (                          -- 1 ligne par pays et par mois, même sans vente
+  SELECT p.pays, k.mois, COALESCE(v.ca, 0) AS ca
+  FROM pays p
+  CROSS JOIN calendrier k
+  LEFT JOIN ventes v ON v.pays = p.pays AND v.mois = k.mois
+),
+evolution AS (
+  SELECT *, LAG(ca) OVER (PARTITION BY pays ORDER BY mois) AS ca_precedent
+  FROM grille
+)
+SELECT pays,
+       to_char(mois, 'YYYY-MM')                                       AS mois,
+       ROUND(ca, 2)                                                   AS ca,
+       ROUND(ca_precedent, 2)                                         AS ca_mois_precedent,
+       ROUND(ca - ca_precedent, 2)                                    AS variation_eur,
+       ROUND((ca - ca_precedent) / NULLIF(ca_precedent, 0) * 100, 1)  AS variation_pct
+FROM evolution
+ORDER BY pays, mois;
