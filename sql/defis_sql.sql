@@ -91,3 +91,29 @@ JOIN users u ON u.user_id = t.commande_user_id
 GROUP BY u.user_id, u.user_pseudo
 ORDER BY nb_commandes DESC, depense_totale DESC, u.user_id
 LIMIT 50;
+
+
+-- =====================================================================
+-- DÉFI SQL 04 — Variantes jamais achetées
+-- Quelles variantes actives du catalogue n'ont jamais été achetées ?
+-- =====================================================================
+-- Hypothèses : la table variantes n'a pas de colonne "actif" ; on considère
+-- une variante active si son prix est > 0. "Achetée" = présente dans une
+-- commande validée (payee, expediee, livree), comme dans les défis 1 à 3.
+-- NOT EXISTS = "il n'existe aucune ligne de commande validée pour cette variante".
+SELECT v.variante_id,
+       p.product_name   AS produit,
+       v.variante_size  AS taille,
+       v.variante_color AS couleur,
+       v.variante_price AS prix
+FROM variantes v
+JOIN product   p ON p.product_id = v.variante_product_id
+WHERE v.variante_price > 0
+  AND NOT EXISTS (
+        SELECT 1
+        FROM commandes_items i
+        JOIN commandes c ON c.commande_id = i.commande_id
+        WHERE i.commande_variante_id = v.variante_id
+          AND c.commande_status IN ('payee', 'expediee', 'livree')
+      )
+ORDER BY p.product_name, v.variante_size, v.variante_color;
