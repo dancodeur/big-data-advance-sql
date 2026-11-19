@@ -11,6 +11,7 @@ Schéma relationnel e-commerce corrigé à partir de `docs/original/Modelisation
 | `docs/original/Modelisation_DB.json` | Schéma d'origine |
 | `supabase/migrations/20261118120000_init_ecommerce_schema.sql` | Schéma de la BD : 18 tables, contraintes, index, triggers, RLS |
 | `sql/schema_tables_only.sql` | Version allégée : uniquement les 18 tables, clés, contraintes et index (sans RLS, policies, droits, triggers) |
+| `sql/seed_data/seed_data_0X_sur_04.sql` | Mêmes données que `seed.py --seed 42`, en 4 fichiers SQL à coller dans le SQL Editor Supabase, dans l'ordre (sans mot de passe ni Python) |
 | `scripts/rebuild_db.py` | Reconstruit la BD en local (ou sur Supabase) depuis les migrations |
 | `scripts/seed.py` | Seeder : peuple les 18 tables avec des données fictives cohérentes |
 | `scripts/generate_drawio.py` | Régénère le `.drawio` depuis la base réelle |
