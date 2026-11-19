@@ -123,7 +123,7 @@ SELECT pays,
        ROUND(ca, 2)                                                          AS ca_mois,
        ROUND(LAG(ca) OVER w, 2)                                              AS ca_mois_precedent,
        ROUND(ca - LAG(ca) OVER w, 2)                                         AS variation_eur,
-       ROUND((ca - LAG(ca) OVER w) / NULLIF(LAG(ca) OVER w, 0) * 100, 1)     AS variation_pct
+       ROUND((ca - LAG(ca) OVER w) / NULLIF(LAG(ca) OVER w, 0) * 100, 1)     AS variation_pourcentage
 FROM grille
 WINDOW w AS (PARTITION BY pays ORDER BY mois)
 ORDER BY pays, mois;
