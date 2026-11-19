@@ -127,3 +127,22 @@ SELECT pays,
 FROM grille
 WINDOW w AS (PARTITION BY pays ORDER BY mois)
 ORDER BY pays, mois;
+
+
+-- DÉFI SQL 19
+WITH achats AS (
+  SELECT commande_user_id AS user_id,
+         commande_date,
+         MIN(commande_date) OVER (PARTITION BY commande_user_id) AS premier_achat
+  FROM commandes
+  WHERE commande_status IN ('payee', 'expediee', 'livree')
+    AND commande_user_id IS NOT NULL
+)
+SELECT COUNT(DISTINCT user_id) AS nb_clients,
+       ROUND(100.0 * COUNT(DISTINCT user_id) FILTER (WHERE commande_date > premier_achat
+             AND commande_date <= premier_achat + INTERVAL '30 days') / COUNT(DISTINCT user_id), 1) AS pourcentage_30_jours,
+       ROUND(100.0 * COUNT(DISTINCT user_id) FILTER (WHERE commande_date > premier_achat
+             AND commande_date <= premier_achat + INTERVAL '60 days') / COUNT(DISTINCT user_id), 1) AS pourcentage_60_jours,
+       ROUND(100.0 * COUNT(DISTINCT user_id) FILTER (WHERE commande_date > premier_achat
+             AND commande_date <= premier_achat + INTERVAL '90 days') / COUNT(DISTINCT user_id), 1) AS pourcentage_90_jours
+FROM achats;
