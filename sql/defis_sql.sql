@@ -142,3 +142,24 @@ JOIN marques   m ON m.marque_id   = p.product_marque_id
 WHERE c.commande_status IN ('payee', 'expediee', 'livree')
 GROUP BY m.marque_id, m.marque_name
 ORDER BY rang, marque;
+
+
+-- =====================================================================
+-- DÉFI SQL 07 — Clients à relancer (inactifs)
+-- Quels clients ayant déjà acheté n'ont rien commandé depuis 180 jours ?
+-- =====================================================================
+-- "Ayant déjà acheté" = au moins une commande validée (payee, expediee, livree).
+-- On regarde la DERNIÈRE commande validée de chaque client (MAX) : si elle date de
+-- plus de 180 jours, le client est inactif. HAVING filtre après le regroupement.
+SELECT u.user_id,
+       u.user_pseudo,
+       u.user_email,
+       COUNT(*)                                      AS nb_commandes,
+       MAX(c.commande_date)::date                    AS derniere_commande,
+       (CURRENT_DATE - MAX(c.commande_date)::date)   AS jours_depuis
+FROM users u
+JOIN commandes c ON c.commande_user_id = u.user_id
+WHERE c.commande_status IN ('payee', 'expediee', 'livree')
+GROUP BY u.user_id, u.user_pseudo, u.user_email
+HAVING MAX(c.commande_date) < now() - INTERVAL '180 days'
+ORDER BY derniere_commande;
