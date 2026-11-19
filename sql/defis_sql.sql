@@ -146,3 +146,23 @@ SELECT COUNT(DISTINCT user_id) AS nb_clients,
        ROUND(100.0 * COUNT(DISTINCT user_id) FILTER (WHERE commande_date > premier_achat
              AND commande_date <= premier_achat + INTERVAL '90 days') / COUNT(DISTINCT user_id), 1) AS pourcentage_90_jours
 FROM achats;
+
+
+-- DÉFI SQL 20
+SELECT i1.commande_variante_id            AS variante_1,
+       p1.product_name                    AS produit_1,
+       i2.commande_variante_id            AS variante_2,
+       p2.product_name                    AS produit_2,
+       COUNT(DISTINCT i1.commande_id)     AS nb_commandes
+FROM commandes_items i1
+JOIN commandes_items i2 ON i2.commande_id = i1.commande_id
+                       AND i2.commande_variante_id > i1.commande_variante_id
+JOIN commandes c  ON c.commande_id  = i1.commande_id
+JOIN variantes v1 ON v1.variante_id = i1.commande_variante_id
+JOIN product   p1 ON p1.product_id  = v1.variante_product_id
+JOIN variantes v2 ON v2.variante_id = i2.commande_variante_id
+JOIN product   p2 ON p2.product_id  = v2.variante_product_id
+WHERE c.commande_status IN ('payee', 'expediee', 'livree')
+GROUP BY i1.commande_variante_id, p1.product_name, i2.commande_variante_id, p2.product_name
+ORDER BY nb_commandes DESC, variante_1, variante_2
+LIMIT 10;
