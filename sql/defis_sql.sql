@@ -120,7 +120,8 @@ grille AS (
 )
 SELECT pays,
        mois,
-       ROUND(ca, 2)                                                          AS ca,
+       ROUND(ca, 2)                                                          AS ca_mois,
+       ROUND(LAG(ca) OVER w, 2)                                              AS ca_mois_precedent,
        ROUND(ca - LAG(ca) OVER w, 2)                                         AS variation_eur,
        ROUND((ca - LAG(ca) OVER w) / NULLIF(LAG(ca) OVER w, 0) * 100, 1)     AS variation_pct
 FROM grille
