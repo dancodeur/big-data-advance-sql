@@ -163,3 +163,44 @@ WHERE c.commande_status IN ('payee', 'expediee', 'livree')
 GROUP BY u.user_id, u.user_pseudo, u.user_email
 HAVING MAX(c.commande_date) < now() - INTERVAL '180 days'
 ORDER BY derniere_commande;
+
+
+-- =====================================================================
+-- DÉFI SQL 08 — Catégorie n°1 de chaque pays
+-- Quelle catégorie réalise le plus de ventes dans chaque pays ?
+-- Un produit peut appartenir à plusieurs catégories.
+-- =====================================================================
+-- • Ventes = chiffre d'affaires (prix payé x quantité) des commandes validées
+--   (payee, expediee, livree) ; le pays vient de l'adresse liée à la commande.
+-- • Un produit pouvant avoir plusieurs catégories, on passe par la table de liaison
+--   category_pivot : une vente compte dans CHAQUE catégorie de son produit (le total
+--   de toutes les catégories dépasse donc le chiffre d'affaires réel : c'est voulu).
+-- • Les produits sans catégorie n'apparaissent pas.
+-- • RANK() numérote les catégories par pays ; on garde le rang 1 (en cas d'égalité
+--   parfaite, les deux catégories ressortent).
+WITH ventes AS (
+  SELECT a.adress_contry                                  AS pays,
+         cat.category_name                                AS categorie,
+         SUM(i.commande_unique_price * i.quantity)        AS chiffre_affaires,
+         SUM(i.quantity)                                  AS quantites
+  FROM commandes c
+  JOIN adress          a   ON a.adress_id       = c.commande_adress_id
+  JOIN commandes_items i   ON i.commande_id     = c.commande_id
+  JOIN variantes       v   ON v.variante_id     = i.commande_variante_id
+  JOIN category_pivot  cp  ON cp.product_id     = v.variante_product_id
+  JOIN categorie       cat ON cat.category_id   = cp.category_id
+  WHERE c.commande_status IN ('payee', 'expediee', 'livree')
+  GROUP BY a.adress_contry, cat.category_id, cat.category_name
+),
+classement AS (
+  SELECT *,
+         RANK() OVER (PARTITION BY pays ORDER BY chiffre_affaires DESC) AS rang
+  FROM ventes
+)
+SELECT pays,
+       categorie,
+       ROUND(chiffre_affaires, 2) AS chiffre_affaires,
+       quantites
+FROM classement
+WHERE rang = 1
+ORDER BY chiffre_affaires DESC;
