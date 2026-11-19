@@ -301,14 +301,30 @@ def pad(text: str, size: int, filler: str = "x") -> str:
     return (text + filler * size)[:size]
 
 
+# Villes réelles (nom, début du code postal, nb de chiffres à tirer, poids). Les poids font que
+# quelques grandes villes dépassent largement 30 commandes (défi « panier moyen par ville »)
+# alors que les petites restent sous ce seuil, ce qui permet de tester un HAVING.
+PAYS = ["France", "Belgique", "Suisse", "Luxembourg"]
+PAYS_POIDS = [78, 8, 8, 6]
+VILLES = {
+    "France": [("Paris", "75", 3, 24), ("Lyon", "69", 3, 15), ("Marseille", "13", 3, 12),
+               ("Toulouse", "31", 3, 10), ("Bordeaux", "33", 3, 9), ("Lille", "59", 3, 8),
+               ("Nantes", "44", 3, 7), ("Nice", "06", 3, 6), ("Strasbourg", "67", 3, 5),
+               ("Rennes", "35", 3, 4)],
+    "Belgique": [("Bruxelles", "1", 3, 60), ("Liège", "4", 3, 40)],
+    "Suisse": [("Genève", "12", 2, 55), ("Lausanne", "10", 2, 45)],
+    "Luxembourg": [("Luxembourg", "L-1", 3, 100)],
+}
+
+
 def main() -> int:
     load_dotenv()
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--dsn", default=os.environ.get("DATABASE_URL"),
                     help="chaîne de connexion (sinon variable DATABASE_URL, ou ligne DATABASE_URL=... du fichier .env)")
     ap.add_argument("--seed", type=int, default=42, help="graine aléatoire (reproductible)")
-    ap.add_argument("--users", type=int, default=60)
-    ap.add_argument("--guests", type=int, default=12)
+    ap.add_argument("--users", type=int, default=250)
+    ap.add_argument("--guests", type=int, default=30)
     ap.add_argument("--products", type=int, default=80)
     ap.add_argument("--edge-count", type=int, default=10,
                     help="lignes minimum par cas limite (défaut 10, 0 = aucun cas limite)")
@@ -471,8 +487,10 @@ def main() -> int:
             for t in types:
                 aid += 1
                 street = fake.street_address().replace("\n", " ")
-                cp, name = fake.postcode(), f"{street}, {fake.city()}"
-                country = "France" if rng.random() < 0.93 else rng.choice(["Belgique", "Suisse", "Luxembourg"])
+                country = rng.choices(PAYS, PAYS_POIDS)[0]
+                ville, prefixe, digits = rng.choices(VILLES[country], [v[3] for v in VILLES[country]])[0][:3]
+                cp = prefixe + "".join(rng.choice("0123456789") for _ in range(digits))
+                name = f"{street}, {ville}"
                 if tag == "champs_limites":
                     cp, name, country = pad("7", 50, "7"), pad(f"{aid} rue ", 255, "x"), pad("Pays ", 255, "y")
                 elif tag == "caracteres_speciaux":
@@ -738,7 +756,7 @@ def main() -> int:
 
         # --- jeu normal
         for uid in normal_uids + edge_users.get("beaucoup_commandes", []):
-            n = 12 if meta.get(uid) == "beaucoup_commandes" else rng.choices([0, 1, 2, 3, 5], [28, 30, 22, 14, 6])[0]
+            n = 12 if meta.get(uid) == "beaucoup_commandes" else rng.choices([0, 1, 2, 3, 5], [15, 25, 25, 20, 15])[0]
             for _ in range(n):
                 member_order(uid, when_for(uid))
         guest_id = itertools.count(1)

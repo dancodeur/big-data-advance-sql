@@ -44,8 +44,9 @@ ORDER BY chiffre_affaires DESC;
 -- Quelles sont les 20 villes au panier moyen le plus élevé, parmi celles
 -- ayant au moins 30 commandes ?
 -- =====================================================================
--- (Si le résultat est vide : lancer d'abord sql/optionnel_villes_realistes.sql,
---  car les villes générées au hasard ont chacune moins de 30 commandes.)
+-- (Avec les données de test actuelles : 8 villes ressortent. Si tu as encore
+--  l'ANCIENNE version des données et que le résultat est vide, recharge les
+--  nouvelles données ou lance sql/optionnel_villes_realistes.sql.)
 WITH totaux AS (
   SELECT c.commande_id,
          TRIM(split_part(a.adress_name, ',', -1))  AS ville,   -- après la dernière virgule

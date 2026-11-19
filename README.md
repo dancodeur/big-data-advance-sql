@@ -61,3 +61,12 @@ Ou coller la migration dans le SQL editor / `supabase db push`.
 - `users.auth_user_id` lie le profil à Supabase Auth ; `user_password` est optionnel (n'y stocker qu'un hash).
 - RLS : catalogue en lecture publique, données personnelles réservées au propriétaire, `user_guest` / `commandes_userguest` accessibles au `service_role` uniquement.
 - Noms conservés malgré les fautes d'origine (`adress_contry`, …) pour ne rien casser.
+
+## Défis SQL
+
+- `sql/defis_sql.sql` : les défis 01 à 04 (consigne + requête testée sur PostgreSQL 16 et sur Supabase).
+- Les villes du seeder sont de vraies villes pondérées (Paris, Lyon, Marseille…) : le défi 02 (« au moins 30 commandes ») renvoie des lignes dès le premier chargement.
+- Valeurs par défaut du seeder : 250 utilisateurs, 30 invités, ~870 commandes.
+- Recharger les données dans Supabase : `sql/reset_donnees.sql` (vide les 18 tables), puis `sql/seed_data/seed_data_01…04` dans l'ordre.
+- Régénérer ces 4 fichiers depuis une base remplie : `python scripts/export_seed_sql.py --dsn <dsn> --out sql/seed_data --parts 4`.
+- `sql/optionnel_villes_realistes.sql` : rattrapage pour l'ancienne version des données uniquement.

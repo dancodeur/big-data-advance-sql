@@ -1,5 +1,7 @@
 -- =====================================================================
 -- OPTIONNEL : des villes "réalistes" pour le DÉFI SQL 02
+-- (inutile si tu as rechargé les nouvelles données de sql/seed_data/ : elles contiennent déjà
+--  de vraies villes. Sert seulement à rattraper l'ANCIENNE version des données.)
 -- =====================================================================
 -- Pourquoi ? Le seeder tire les villes au hasard (Faker) : chaque ville
 -- n'a que ~10 commandes, donc "au moins 30 commandes" ne renvoie rien.
